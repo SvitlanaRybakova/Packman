@@ -4,15 +4,47 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Threading;
+using System.Net.NetworkInformation;
 
 namespace Packman
 {
     internal class Program
     {
         static void Main(string[] args)
+
+
         {
+            Console.CursorVisible = false;
+
             char[,] gameMap = ReadMap("map.txt");
-            DrawMap(gameMap);
+
+            ConsoleKeyInfo pressedKey = new ConsoleKeyInfo('w', ConsoleKey.W, false, false, false);
+
+
+            int pacmanX = 1;
+            int pacmanY = 1;
+
+            while (true)
+            {
+                Console.Clear();
+
+                Console.ForegroundColor = ConsoleColor.Blue;
+                DrawMap(gameMap);
+
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.SetCursorPosition(pacmanX, pacmanY);
+                Console.Write("@");
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.SetCursorPosition(22, 0);
+                Console.Write("The pressed key is: " + pressedKey.KeyChar);
+                pressedKey = Console.ReadKey();
+
+                HandleInput(pressedKey, ref pacmanX, ref pacmanY);
+            }
+
         }
 
         private static char[,] ReadMap(string path)
@@ -20,9 +52,9 @@ namespace Packman
             string[] file = File.ReadAllLines(path);
             char[,] map = new char[GetMaxLenghtOfLine(file), file.Length];
 
-            for(int x = 0; x < map.GetLength(0);  x++)
+            for (int x = 0; x < map.GetLength(0); x++)
             {
-                for(int y = 0; y < map.GetLength(1); y++)
+                for (int y = 0; y < map.GetLength(1); y++)
                 {
                     map[x, y] = file[y][x];
                 }
@@ -41,6 +73,7 @@ namespace Packman
                 Console.WriteLine();
             }
         }
+
         private static int GetMaxLenghtOfLine(string[] lines)
         {
             int maxLength = lines[0].Length;
@@ -53,6 +86,26 @@ namespace Packman
                 }
             }
             return maxLength;
+        }
+
+        private static void HandleInput(ConsoleKeyInfo pressedKey, ref int pacmanX, ref int pacmanY)
+        {
+            if(pressedKey.Key == ConsoleKey.UpArrow)
+            {
+                pacmanY -= 1;
+            }
+            if (pressedKey.Key == ConsoleKey.DownArrow)
+            {
+                pacmanY += 1;
+            }
+            if (pressedKey.Key == ConsoleKey.RightArrow)
+            {
+                pacmanX += 1;
+            }
+            if (pressedKey.Key == ConsoleKey.LeftArrow)
+            {
+                pacmanX -= 1;
+            }
         }
     }
 }
