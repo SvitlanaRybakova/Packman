@@ -25,6 +25,8 @@ namespace Packman
             int pacmanX = 1;
             int pacmanY = 1;
 
+            int score = 0;
+
             while (true)
             {
                 Console.Clear();
@@ -39,10 +41,10 @@ namespace Packman
 
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.SetCursorPosition(22, 0);
-                Console.Write("The pressed key is: " + pressedKey.KeyChar);
+                Console.Write($"Score: {score}");
                 pressedKey = Console.ReadKey();
 
-                HandleInput(pressedKey, ref pacmanX, ref pacmanY);
+                HandleInput(pressedKey, ref pacmanX, ref pacmanY, gameMap, ref score);
             }
 
         }
@@ -88,24 +90,55 @@ namespace Packman
             return maxLength;
         }
 
-        private static void HandleInput(ConsoleKeyInfo pressedKey, ref int pacmanX, ref int pacmanY)
+        private static void HandleInput(ConsoleKeyInfo pressedKey, ref int pacmanX, ref int pacmanY, char[,] map, ref int score)
         {
-            if(pressedKey.Key == ConsoleKey.UpArrow)
+            int[] direction = GetDirection(pressedKey);
+            int nextPacmanPositionX = pacmanX + direction[0];
+            int nextPacmanPositionY = pacmanY + direction[1];
+
+            if (nextPacmanPositionX >= 0 && nextPacmanPositionX < map.GetLength(0) &&
+                nextPacmanPositionY >= 0 && nextPacmanPositionY < map.GetLength(1))
             {
-                pacmanY -= 1;
+                char nextCell = map[nextPacmanPositionX, nextPacmanPositionY];
+
+                if (nextCell == '.')
+                {
+                    pacmanX = nextPacmanPositionX;
+                    pacmanY = nextPacmanPositionY;
+                    map[pacmanX, pacmanY] = ' '; 
+                    score++;
+                }
+                else if (nextCell != '#') 
+                {
+                    pacmanX = nextPacmanPositionX;
+                    pacmanY = nextPacmanPositionY;
+                }
             }
-            if (pressedKey.Key == ConsoleKey.DownArrow)
+        }
+
+
+        private static int[] GetDirection (ConsoleKeyInfo pressedKey)
+        {
+            int[] direction = { 0, 0 };
+
+            if (pressedKey.Key == ConsoleKey.UpArrow)
             {
-                pacmanY += 1;
+                direction[1] = -1;
             }
-            if (pressedKey.Key == ConsoleKey.RightArrow)
+            else if (pressedKey.Key == ConsoleKey.DownArrow)
             {
-                pacmanX += 1;
+                direction[1] = 1;
             }
-            if (pressedKey.Key == ConsoleKey.LeftArrow)
+           else if (pressedKey.Key == ConsoleKey.RightArrow)
             {
-                pacmanX -= 1;
+                direction[0] = 1;
             }
+            else if (pressedKey.Key == ConsoleKey.LeftArrow)
+            {
+                direction[0] = -1;
+            }
+
+            return direction;
         }
     }
 }
