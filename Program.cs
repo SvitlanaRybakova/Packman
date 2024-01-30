@@ -22,6 +22,15 @@ namespace Packman
             ConsoleKeyInfo pressedKey = new ConsoleKeyInfo('w', ConsoleKey.W, false, false, false);
 
 
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    pressedKey = Console.ReadKey();
+
+                }
+            });
+
             int pacmanX = 1;
             int pacmanY = 1;
 
@@ -30,6 +39,8 @@ namespace Packman
             while (true)
             {
                 Console.Clear();
+
+                HandleInput(pressedKey, ref pacmanX, ref pacmanY, gameMap, ref score);
 
                 Console.ForegroundColor = ConsoleColor.Blue;
                 DrawMap(gameMap);
@@ -42,9 +53,11 @@ namespace Packman
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.SetCursorPosition(22, 0);
                 Console.Write($"Score: {score}");
-                pressedKey = Console.ReadKey();
 
-                HandleInput(pressedKey, ref pacmanX, ref pacmanY, gameMap, ref score);
+
+                Thread.Sleep(1000);
+
+
             }
 
         }
@@ -97,7 +110,7 @@ namespace Packman
             int nextPacmanPositionY = pacmanY + direction[1];
 
             if (nextPacmanPositionX >= 0 && nextPacmanPositionX < map.GetLength(0) &&
-                nextPacmanPositionY >= 0 && nextPacmanPositionY < map.GetLength(1))
+                nextPacmanPositionY >= 1 && nextPacmanPositionY < map.GetLength(1))
             {
                 char nextCell = map[nextPacmanPositionX, nextPacmanPositionY];
 
@@ -105,10 +118,10 @@ namespace Packman
                 {
                     pacmanX = nextPacmanPositionX;
                     pacmanY = nextPacmanPositionY;
-                    map[pacmanX, pacmanY] = ' '; 
+                    map[pacmanX, pacmanY] = ' ';
                     score++;
                 }
-                else if (nextCell != '#') 
+                else if (nextCell != '#')
                 {
                     pacmanX = nextPacmanPositionX;
                     pacmanY = nextPacmanPositionY;
@@ -117,7 +130,7 @@ namespace Packman
         }
 
 
-        private static int[] GetDirection (ConsoleKeyInfo pressedKey)
+        private static int[] GetDirection(ConsoleKeyInfo pressedKey)
         {
             int[] direction = { 0, 0 };
 
@@ -129,7 +142,7 @@ namespace Packman
             {
                 direction[1] = 1;
             }
-           else if (pressedKey.Key == ConsoleKey.RightArrow)
+            else if (pressedKey.Key == ConsoleKey.RightArrow)
             {
                 direction[0] = 1;
             }
